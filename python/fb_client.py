@@ -1,4 +1,4 @@
-# 	©2014 William Breidenthal
+# 	(c)2014 William Breidenthal
 # 	willhb@gmail.com
 #	http://www.willhb.com
 # 	About: Grabs step count and goal from the fitbit API and send the completion percent out over a serial port.

@@ -1,5 +1,5 @@
 /**********************
-* 	©2014 William Breidenthal
+* 	(c)2014 William Breidenthal
 *	willhb@gmail.com
 *	http://www.willhb.com
 *
