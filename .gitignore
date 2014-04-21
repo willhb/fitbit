@@ -2,3 +2,21 @@
 python/config.ini
 
 python/config.ini
+
+*.map
+
+*.lss
+
+*.elf
+
+*.bin
+
+*.d
+
+*.lst
+
+*.o
+
+python/config.ini
+
+*.ini
