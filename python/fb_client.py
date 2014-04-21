@@ -18,9 +18,16 @@ import serial
 #sleep time in seconds
 update = 60
 
+if update > 150:
+	update = 150
+	print "Max polling rate for Fitibt API is 150/hour."
+
 valid = '1'
 
-serialport = raw_input("Enter serial port:")
+previous = 0
+
+#serialport = raw_input("Enter serial port:")
+serialport = '/dev/tty.usbmodem1a1221'
 
 ser = serial.Serial(serialport, 115200, timeout=0)
 
@@ -76,7 +83,7 @@ while 1:
 	prompt = raw_input("Are you " + profile['user']['displayName'] + "?[y]")
 	
 	if (prompt == 'yes') or (prompt == 'y') or (prompt == ''):
-		print "Hi! Running step counter. CTRL-C to Exit."
+		print "Hi! Running step counter display. CTRL-C to Exit."
 		print "Updating " + str(60*60/int(update)) + " times per hour."
 		break
 	else:
@@ -100,9 +107,13 @@ while 1:
 
 	progress = int((float(steps)/float(goal))*1000)
 
-	print progress
-
-	ser.write(str(progress) + "\n\r")
+#only print updates when we have done some activity
+	if progress != previous:
+		previous = progress
+		print time.strftime("%H:%m - ") + str(float(progress)/10.0) + "%"
+		# At midnight the counter will resent, don't update until it is a reasonable hour!
+		if time.strftime("%H") > 7:
+			ser.write(str(progress) + "\n\r")
 
 	time.sleep(int(update))
 
