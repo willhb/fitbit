@@ -106,7 +106,7 @@ while 1:
 #only print updates when we have done some activity
 	if progress != previous:
 		previous = progress
-		print time.strftime("%H:%m - ") + str(float(progress)/10.0) + "%"
+		print time.strftime("%H:%M - ") + str(float(progress)/10.0) + "%"
 		# At midnight the counter will resent, don't update until it is a reasonable hour!
 		if time.strftime("%H") > 7:
 			ser.write(str(progress) + "\n\r")
