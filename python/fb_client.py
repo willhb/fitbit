@@ -15,33 +15,28 @@ import sys
 import time
 import serial
 
-#sleep time in seconds
-update = 60
+parser = ConfigParser.SafeConfigParser()
+parser.read('./config.ini')
+consumer_key = parser.get('OAuth Parameters', 'CONSUMER_KEY')
+consumer_secret = parser.get('OAuth Parameters', 'CONSUMER_SECRET')
+serial_port = parser.get('Serial Parameters', 'SERIAL_PORT')
+baud_rate = int(parser.get('Serial Parameters', 'BAUD_RATE'))
+timeout = int(parser.get('Serial Parameters', 'TIMEOUT'))
+update_rate = int(parser.get('Fitbit Parameters', 'UPDATE_RATE'))
 
-if update > 150:
-	update = 150
+
+if update_rate > 150:
+	update_rate = 150
 	print "Max polling rate for Fitibt API is 150/hour."
-
-valid = '1'
 
 previous = 0
 
 #serialport = raw_input("Enter serial port:")
-serialport = '/dev/tty.usbmodem1a1221'
-
-ser = serial.Serial(serialport, 115200, timeout=0)
-
+ser = serial.Serial(serial_port, baud_rate, timeout=timeout)
 
 #Get the application OAuth keys from a config file
-
-
 while 1:
 
-	if valid == '1':
-		parser = ConfigParser.SafeConfigParser()
-		parser.read('./config.ini')
-		consumer_key = parser.get('OAuth Parameters', 'CONSUMER_KEY')
-		consumer_secret = parser.get('OAuth Parameters', 'CONSUMER_SECRET')
 	user_key = parser.get('OAuth Parameters', 'USER_KEY')
 	user_secret = parser.get('OAuth Parameters', 'USER_SECRET')
 	user_id = parser.get('OAuth Parameters', 'USER_ID')
@@ -84,14 +79,13 @@ while 1:
 	
 	if (prompt == 'yes') or (prompt == 'y') or (prompt == ''):
 		print "Hi! Running step counter display. CTRL-C to Exit."
-		print "Updating " + str(60*60/int(update)) + " times per hour."
+		print "Updating " + str((60*60)/update_rate) + " times per hour."
 		break
 	else:
 		print "Clearing configuration, please re-run."
 		parser.set('OAuth Parameters', 'USER_ID', '0')
 		parser.set('OAuth Parameters', 'USER_SECRET', '0')
 		parser.set('OAuth Parameters', 'USER_KEY', '0')
-		valid = '0'
 		fp = open("./config.ini",'w')
 		parser.write(fp)
 		fp.close
@@ -101,9 +95,11 @@ while 1:
 
 	date = time.strftime("%Y-%m-%d")
 
-	goal = auth_client._COLLECTION_RESOURCE('activities',date=date)['goals']['steps']
+	current_activities = auth_client._COLLECTION_RESOURCE('activities',date=date)
 
-	steps = auth_client._COLLECTION_RESOURCE('activities',date=date)['summary']['steps']
+	goal = current_activities['goals']['steps']
+
+	steps = current_activities['summary']['steps']
 
 	progress = int((float(steps)/float(goal))*1000)
 
@@ -115,5 +111,6 @@ while 1:
 		if time.strftime("%H") > 7:
 			ser.write(str(progress) + "\n\r")
 
-	time.sleep(int(update))
+	#60 seconds * 60 minutes in an hour / update rate
+	time.sleep(int((60*60)/update_rate))
 
