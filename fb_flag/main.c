@@ -51,6 +51,7 @@ int	main (void)
 	while(1){
 		
 				error = scanf("%d", &request);
+				FIO1CLR |= 1 << 26 | 1 << 20;
 				fflush(stdin);
 				if(error == 1)
 				{
@@ -67,7 +68,9 @@ int	main (void)
 				
 					PWMMR1 = 30000 + request*106;
 					PWMLER = 3;	
-				}			
+				}	
+				delay_ms(50);
+				FIO1SET |= 1 << 26 | 1 << 20;		
 	}
 
 }
