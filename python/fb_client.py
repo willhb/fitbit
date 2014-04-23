@@ -94,8 +94,8 @@ while 1:
 while 1:
 
 	date = time.strftime("%Y-%m-%d")
-	if time.strftime("%H") > 7:
-		
+	if int(time.strftime("%H")) > 7:
+
 		try:
 			current_activities = auth_client._COLLECTION_RESOURCE('activities',date=date)
 		except:
