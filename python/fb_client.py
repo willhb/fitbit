@@ -94,21 +94,36 @@ while 1:
 while 1:
 
 	date = time.strftime("%Y-%m-%d")
+	if time.strftime("%H") > 7:
+		
+		try:
+			current_activities = auth_client._COLLECTION_RESOURCE('activities',date=date)
+		except:
+			current_activities = 0
+			print "Can't connect to Fitbit."
+			pass
 
-	current_activities = auth_client._COLLECTION_RESOURCE('activities',date=date)
+		try:
+			steps = current_activities['summary']['steps']
+		except:
+			steps = previous 
+			print "Can't get steps."
+			pass
+		
+		try:
+			goal = current_activities['goals']['steps']
+		except:
+			goal = 10000
+			print "Can't get goal."
+			pass
 
-	goal = current_activities['goals']['steps']
-
-	steps = current_activities['summary']['steps']
-
-	progress = int((float(steps)/float(goal))*1000)
+		progress = int((float(steps)/float(goal))*1000)
 
 #only print updates when we have done some activity
-	if progress != previous:
-		previous = progress
-		print time.strftime("%H:%M - ") + str(float(progress)/10.0) + "%"
-		# At midnight the counter will resent, don't update until it is a reasonable hour!
-		if time.strftime("%H") > 7:
+		if progress != previous:
+			previous = progress
+			print time.strftime("%H:%M - ") + str(float(progress)/10.0) + "%"
+			# At midnight the counter will resent, don't update until it is a reasonable hour!
 			ser.write(str(progress) + "\n\r")
 
 	#60 seconds * 60 minutes in an hour / update rate
